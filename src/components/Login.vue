@@ -4,24 +4,33 @@
         <v-card v-if="!isLoggedIn" max-width="344" class="mx-auto">
  
           <v-card-text>
-            <div class="mb-10 pr-10 pl-10 pt-5">
-            <v-img
-              src="https://res.cloudinary.com/chartwell-consulting/image/upload/v1566047004/websiteAssets/logo_huhwki.png"
-              lazy-src="https://res.cloudinary.com/chartwell-consulting/image/upload/v1566047004/websiteAssets/logo_huhwki.png"
-            ></v-img>
+            <div class="pr-10 pl-10 pt-5">
+              <v-flex xs12>
+        <v-img
+          :src="require('../assets/logo.png')"
+          class="my-3"
+          contain
+        ></v-img>
+      </v-flex>
           </div>
+          <div class="text-center">
             <h3>Admin area</h3>
             <p>
               You are not logged in.</p>
+              <p>
+                User: miguelpuig@gmail.com<br>
+                Pass: zoopla2020
+                </p>
             <p>
               <v-btn
-                class="mt-12"
+                class="mt-3"
                 outlined
                 color="primary"
                 large
                 @click="triggerNetlifyIdentityAction('login')"
               ><v-icon small>mdi-lock-outline</v-icon> Log On</v-btn>
             </p>
+            </div>
           </v-card-text>
         </v-card>
 </v-flex>
@@ -59,7 +68,6 @@ export default {
       if (action == "login" || action == "signup") {
         netlifyIdentity.open(action);
         netlifyIdentity.on(action, user => {
-          this.test = user;
           this.currentUser = {
             username: user.user_metadata.full_name,
             email: user.email,
