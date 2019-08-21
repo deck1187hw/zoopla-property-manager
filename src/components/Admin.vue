@@ -2,8 +2,6 @@
   <v-container>
  <v-card>
     <v-card-title>
-      Properties
-      <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
         label="Search"
@@ -24,28 +22,34 @@
     class="elevation-1"
   ><template v-slot:top>
       <v-toolbar flat color="white">
-        <v-toolbar-title>My CRUD</v-toolbar-title>
+        <v-toolbar-title>Properties</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
           vertical
         ></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="900px" width="900px">
+        <v-dialog persistent scrollable v-model="dialog" max-width="900px" width="900px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark class="mb-2" v-on="on">New Property</v-btn>
           </template>
           <v-card>
-            <v-card-title>
+            <v-card-title class="headline grey lighten-2"
+          primary-title>
               <span class="headline">{{ formTitle }}</span>
             </v-card-title>
             <v-card-text>
               <v-container v-if="editedItem">
                 <v-row>
+                   <v-col cols="12" sm="6" md="4">
+                    
+                    <v-switch v-model="editedItem.expired" :label="getActive(editedItem.expired)"></v-switch>
+
+                  </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.id" label="Property ID" disabled></v-text-field>
                   </v-col>
-                  <v-col cols="12" sm="6" md="4">
+                  <v-col cols="12" sm="6" md="4" v-if="editedItem.created && editedItem.updated">
                     Created: {{editedItem.created | moment('LLLL') }}
                     Updated: {{editedItem.updated | moment('LLLL') }}
                   </v-col>
@@ -60,7 +64,7 @@
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field v-model="editedItem.asking_price" number :label="'Asking price ('+currency.symbol+')'"></v-text-field>
-                    <strong v-if="editedItem.asking_price">{{numberWithCommas(editedItem.asking_price)}}{{currency.symbol}}</strong>
+                    <strong v-if="editedItem.asking_price">{{getPrice(editedItem.asking_price)}}{{currency.symbol}}</strong>
                   </v-col>
                   <v-col cols="12" sm="12" md="12">
                     <v-text-field v-model="editedItem.address" label="Full address"></v-text-field>
@@ -94,7 +98,7 @@
                 </v-row>
               </v-container>
             </v-card-text>
-
+             <v-divider></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
@@ -105,20 +109,34 @@
       </v-toolbar>
     </template>
 
-    <template v-slot:item.created="{ item }">
-      Created: {{item.created | moment('LLLL') }}<br>
-      Updated: {{item.updated | moment('LLLL') }} <span>{{ item.updated | moment("from", "now") }}</span>
+    <template v-slot:item.name="{ item }">
+      <small>{{item.id}}</small><br />
+      <strong>{{item.name}}</strong><br />
+      <small>Created: {{item.created | moment('LLLL') }}<br>
+      Updated: <span>{{ item.updated | moment("from", "now") }}</span></small>
     </template>
     <template v-slot:item.images="{ item }">
-      <Imageproperty :images="item.images" width="300" height="100" />
+      <div v-if="item.images.length>0">
+        <Imageproperty :images="item.images" width="300" height="100" />
+      </div>
     </template>
 
     <template v-slot:item.expired="{ item }">
       <v-chip :color="getExpiredColor(item.expired)" dark>{{getExpiredText(item.expired)}}</v-chip>
     </template>
+
+     <template v-slot:item.asking_price="{ item }">
+      <span v-if="item.asking_price">{{getPrice(item.asking_price)}} {{currency.symbol}}</span>
+    </template>
     <template v-slot:item.expired="{ item }">
       <v-chip :color="getExpiredColor(item.expired)" dark>{{getExpiredText(item.expired)}}</v-chip>
     </template>
+    <template v-slot:item.num_bedrooms="{ item }">
+         <v-badge>
+          <template v-slot:badge>{{item.num_bedrooms}}</template>
+        </v-badge>
+    </template>
+
     <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
           <div class="pt-10 pl-10 pb-10">
@@ -173,7 +191,7 @@
             class="mr-2"
             @click="editItem(item)"
           >
-            edit
+           edit
           </v-icon>
           <v-icon
             small
@@ -208,8 +226,11 @@ export default {
     }
   },
   methods: {
-    numberWithCommas(x) {
+    getPrice(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    getActive (x) {
+        return x ? 'Active' : 'Expired'
     },
     getExpiredColor(expired){
       return expired ? 'red' : 'success'
@@ -226,8 +247,9 @@ export default {
         this.dialog = true
     },
     deleteItem (item) {
-      const index = this.properties.indexOf(item)
-      confirm('Are you sure you want to delete this property?') && this.properties.splice(index, 1)
+      if(confirm('Are you sure you want to delete this property?')){
+        this.$store.dispatch("management/deleteProperty", item);
+      }
     },
     close () {
       this.dialog = false
@@ -237,12 +259,11 @@ export default {
       }, 300)
     },
     save () {
-      this.$store.dispatch("management/updateProperty", this.editedItem);
-      if (this.editedIndex > -1) {
-       // Object.assign(this.properties[this.editedIndex], this.editedItem)
+      if (typeof this.editedItem.id !== 'undefined') {
+       this.$store.dispatch("management/updateProperty", this.editedItem);
         
       } else {
-       // this.properties.push(this.editedItem)
+        this.$store.dispatch("management/addProperty", this.editedItem);
       }
       this.close()
     },
@@ -263,7 +284,8 @@ export default {
           asking_price: 0,
           address: '',
           description: '',
-          created: null
+          created: null,
+          expired: null
         },
         defaultItem: {
           name: '',
@@ -272,17 +294,16 @@ export default {
           asking_price: 0,
           address: '',
           description: '',
-          created: null
+          created: null,
+          expired: null
         },
         headers: [
           { text: 'Images', value: 'images', sortable: false },
-          { text: 'Id', value: 'id', sortable: true },
           { text: 'Name', value: 'name', sortable: true },
-          { text: 'Created/Updated', value: 'created', sortable: true },
-          { text: 'Bedrooms', value: 'num_bedrooms', sortable: true },
+          { text: 'Beds', value: 'num_bedrooms', sortable: true },
           { text: 'Postcode', value: 'postcode', sortable: true },
-          { text: 'Name', value: 'asking_price', sortable: true },
-          { text: 'Expired', value: 'expired', sortable: true },
+          { text: 'Asking Price', value: 'asking_price', sortable: true },
+          { text: 'Active', value: 'expired', sortable: true },
           { text: 'Actions', value: 'action', sortable: false },
         ],        
   }),

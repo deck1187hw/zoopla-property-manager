@@ -58,5 +58,20 @@
     "expired": true,
     "created": 1564617601,
     "updated": 1565308800
+},
+{
+    "id": 2440978550,
+    "name": "1 bed end terrace house for sale",
+    "images": [
+        "https://loremflickr.com/320/240/house", "https://loremflickr.com/320/240/house"
+    ],
+    "num_bedrooms":1,
+    "postcode": "N1 6JS",
+    "address": "The Old Monument, Haggerston E2",
+    "description": "<p>An imposing, over 2,300 square feet, freehold converted dairy in Haggerston, moments away from beautiful Albion Square, one of East London’s most prestigious garden squares. Formerly a working dairy, the property is arranged over four floors and offers a practical and flexible layout with five bedrooms to the first and second floors, having access to two private terraces; soundproofed music room/studio to the lower ground level; and a double height reception room with an additional gallery/mezzanine space.</p>",
+    "asking_price": 900000,
+    "expired": true,
+    "created": 1564617601,
+    "updated": 1565308800
 }
 ]
