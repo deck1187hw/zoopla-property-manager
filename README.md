@@ -12,6 +12,8 @@ https://zoopla-admin.netlify.com
 - Validation Helper not implemented yet (will be working on the store actions)
 - Move the object property to a DB so the fields are dynamic (they may want to have a property type for example in the future).
 - Add tests to the store
+- Offline support (Web workers)
+- Full mobile experience (remove table and replace it with list)
 - Etc...
 
 ## Project setup
