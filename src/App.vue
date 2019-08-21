@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app>
       <v-toolbar-title class="headline text-uppercase">
-        <span>IG</span>
+        <span>Zoopla</span>
         <span class="font-weight-light"> Management</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
