@@ -1,6 +1,6 @@
 # zoopla-property-manager
 
-## Project Live
+## Demo Live
 
 https://zoopla-admin.netlify.com
 
@@ -12,6 +12,7 @@ https://zoopla-admin.netlify.com
 - Validation Helper not implemented yet (will be working on the store actions)
 - Move the object property to a DB so the fields are dynamic (they may want to have a property type for example in the future).
 - Add tests to the store
+- Etc...
 
 ## Project setup
 ```
